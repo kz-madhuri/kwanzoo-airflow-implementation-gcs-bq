@@ -198,15 +198,20 @@ with DAG('ip2company_pipeline_dag', start_date=datetime(2023, 8, 1), schedule_in
     )
     
     sql_task = BigQueryExecuteQueryOperator(
-        task_id='load_firmographic_to_bq_sql',
+        task_id='load_ip2company_to_bq_sql',
         params={'latest_gcs_uri': "{{ task_instance.xcom_pull(task_ids='process_latest_folder') }}"},
-        sql='load_firmographic_to_bq.sql',
+        sql='load_ip2company_to_bq.sql',
         use_legacy_sql=False,
     )
     
+    sql_task_plaintext = BigQueryExecuteQueryOperator(
+        task_id='load_plaintext_to_bq_sql',
+        sql='load_plaintext_to_bq.sql',
+        use_legacy_sql=False,
+    )
     short_circuit_task = ShortCircuitOperator(
         task_id='short_circuit_task',
         python_callable=skip_downstream_task,
     )
     
-    folder_task >> check_task >> [sql_task, short_circuit_task]
+    folder_task >> check_task >> [sql_task >> sql_task_plaintext , short_circuit_task]
