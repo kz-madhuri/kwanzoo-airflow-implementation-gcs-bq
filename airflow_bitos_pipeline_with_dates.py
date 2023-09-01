@@ -20,6 +20,7 @@ def loading_data_from_gcs_custom_date_range(start_date, end_date, **kwargs):
             current_date += timedelta(days=1)
         except _exception:
             print("Exception handled, skipping to next date")
+            current_date += timedelta(days=1)
             continue
 
 with DAG('bitos_pipeline_dag', start_date=datetime(2023, 8, 1), schedule_interval='30 6 * * Mon') as dag:
