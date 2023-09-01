@@ -25,6 +25,7 @@ def loading_data_from_gcs_custom_date_range(start_date, end_date, **kwargs):
             current_date += timedelta(days=1)
         except Exception:
             print("Exception handled, skipping to next date")
+            current_date += timedelta(days=1)
             continue
 
 
